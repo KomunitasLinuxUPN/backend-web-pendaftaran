@@ -1,17 +1,15 @@
 import express from 'express'
+import bodyParser from 'body-parser'
 
+import homeRoutes from './routes/home'
 import confirmationRoutes from './routes/confirmation'
 
 const app = express()
+app.use(bodyParser.json())
 
-app.use((req, res, next) => {
-  Object.setPrototypeOf(req, app.request)
-  Object.setPrototypeOf(res, app.response)
-  req.res = res
-  res.req = req
-  next()
-})
-
+app.use(homeRoutes)
 app.use(confirmationRoutes)
 
-export default app
+app.listen(8080, () => {
+  console.log('Listening on :8080')
+})

@@ -4,7 +4,7 @@ Backend ini hanya digunakan untuk mengirim email konfirmasi pendaftaran ke membe
 
 Untuk menggunakan GMAIL API silahkan lihat sebuah catatan di file [CATATAN_GMAIL_MAILER.md](./CATATAN_GMAIL_MAILER.md)
 
-Untuk bagian frontend dapat dilihat di [Website-Pendaftaran-KoLU](https://github.com/KomunitasLinuxUPN/Website-Pendaftaran-KoLU.git) 
+Untuk bagian frontend dapat dilihat di [Frontend-Web-Pendaftaran-KoLU](https://github.com/KomunitasLinuxUPN/Website-Pendaftaran-KoLU.git) 
 
 ## Build Setup
 

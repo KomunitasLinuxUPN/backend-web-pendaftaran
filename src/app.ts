@@ -16,6 +16,10 @@ app.use(cors())
 
 dotenv.config()
 
+/*
+ * EmailSendedResponse adalah struktur response balikan dari Gmail API 
+ * ketika email konfirmasi berhasil dikirim
+ */
 interface EmailSendedResponse {
   accepted: string[]
   rejected: string[]
@@ -30,22 +34,32 @@ interface EmailSendedResponse {
   messageId: string
 }
 
+/*
+ * RegConfirmBody adalah struktur request body yang akan dikirim oleh frontend
+ * ketika user melakukan pendaftaran dan perlu melakukan konfirmasi email 
+ */
 interface RegConfirmBody {
-  token: string
-  email: string
+  destEmail: string
+  confirmationURL: string
 }
 
+/*
+ * Gmailer Middleware
+ * Berisi kode untuk melakukan pengiriman email konfirmasi pendaftaran
+ * dengan menggunakan Gmail API.
+ * 
+ * Adapun akun gmail yang digunakan untuk mengirim email adalah akun gmail yang 
+ * anda telah anda konfigurasi API nya, silahkan lihat tata cara buat dapetin 
+ * akses ke APInya dengan membaca file CATATAN_GMAIL_MAILER.md di root folder
+ */
 app.use(async (req, res) => {
   try {
-    const memberEmail = (req.body as RegConfirmBody).email
-    const token = (req.body as RegConfirmBody).token
+    const memberEmail = (req.body as RegConfirmBody).destEmail
+    const confirmationURL = (req.body as RegConfirmBody).confirmationURL
 
     const emailTemplate = await ejs.renderFile(
       Path.join(__dirname, '/templates/confirmation.ejs'),
-      {
-        frontEndURL: process.env.FRONTEND_URL!,
-        token,
-      }
+      { confirmationURL }
     )
 
     const transporter = nodemailer.createTransport({
@@ -76,9 +90,14 @@ app.use(async (req, res) => {
           })
         },
         (infoRejected) => {
-          // Sepertinya pengiriman email tidak mungkin gagal
-          // karena gmail bakal selalu ngirim email walaupun email tujuan salah
-          // Jadi kode ini tidak guna
+          /*
+           * Sepertinya pengiriman email tidak mungkin gagal
+           * karena gmail bakal selalu ngirim email walaupun email tujuan salah
+           * Jadi kode ini tidak guna.
+           * 
+           * Mungkin bakal berguna kalau kamu pakai 3rd party mailer lain
+           * seperti Mailgun, dll.
+           */
           res.status(400).json({
             message:
               'Tidak dapat mengirim konfirmasi pendaftaran ke email anda! Coba lagi nanti',

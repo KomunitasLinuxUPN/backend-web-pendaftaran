@@ -1,23 +1,23 @@
-import Path from 'path'
+import Path from 'path';
 
-import ejs from 'ejs'
-import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
-import express from 'express'
-import bodyParser from 'body-parser'
-import helmet from 'helmet'
-import cors from 'cors'
+import ejs from 'ejs';
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+import express from 'express';
+import bodyParser from 'body-parser';
+import helmet from 'helmet';
+import cors from 'cors';
 
-const app = express()
+const app = express();
 
-app.use(bodyParser.json())
-app.use(helmet())
-app.use(cors())
+app.use(bodyParser.json());
+app.use(helmet());
+app.use(cors());
 
-dotenv.config()
+dotenv.config();
 
 /*
- * EmailSendedResponse adalah struktur response data balikan dari Gmail API 
+ * EmailSendedResponse adalah struktur response data balikan dari Gmail API
  * ketika email konfirmasi berhasil dikirim
  */
 interface EmailSendedResponse {
@@ -50,21 +50,20 @@ interface RegConfirmBody {
  * Gmailer Middleware
  * Berisikan kode untuk melakukan pengiriman email konfirmasi pendaftaran kepada
  * member baru melalui Gmail API.
- * 
- * Adapun akun gmail yang digunakan untuk mengirim email adalah akun gmail yang 
+ *
+ * Adapun akun gmail yang digunakan untuk mengirim email adalah akun gmail yang
  * anda telah anda set konfigurasi API nya.
- * Silahkan lihat tata cara buat dapetin akses ke APInya dengan 
+ * Silahkan lihat tata cara buat dapetin akses ke APInya dengan
  * membaca file CATATAN_GMAIL_MAILER.md di root folder. Jangan lupa set .env nya
  */
 app.use(async (req, res) => {
   try {
-    const memberEmail = (req.body as RegConfirmBody).destEmail
-    const confirmationURL = (req.body as RegConfirmBody).confirmationURL
+    const { destEmail, confirmationURL } = (req.body as RegConfirmBody);
 
     const emailTemplate = await ejs.renderFile(
       Path.join(__dirname, '/templates/confirmation.ejs'),
-      { confirmationURL }
-    )
+      { confirmationURL },
+    );
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -76,12 +75,12 @@ app.use(async (req, res) => {
         refreshToken: process.env.GMAIL_REFRESH_TOKEN,
         accessToken: process.env.GMAIL_ACCESS_TOKEN,
       },
-    })
+    });
 
     transporter
       .sendMail({
         from: process.env.MAILGUN_SENDER,
-        to: memberEmail,
+        to: destEmail,
         subject: 'Konfirmasi Pendaftaran KoLU',
         html: emailTemplate,
       })
@@ -91,14 +90,14 @@ app.use(async (req, res) => {
             message:
               'Silahkan cek emailmu untuk melakukan konfirmasi pendaftaran. Jika tidak ada, mohon cek spam atau hubungi admin',
             moreInfo: infoSended,
-          })
+          });
         },
         (infoRejected) => {
           /*
            * Sepertinya pengiriman email tidak mungkin gagal
            * karena gmail bakal selalu ngirim email walaupun email tujuan salah
            * Jadi kode ini tidak guna.
-           * 
+           *
            * Mungkin bakal berguna kalau kamu pakai 3rd party mailer lain
            * seperti Mailgun, dll.
            */
@@ -106,22 +105,20 @@ app.use(async (req, res) => {
             message:
               'Tidak dapat mengirim konfirmasi pendaftaran ke email anda! Coba lagi nanti',
             moreInfo: infoRejected,
-          })
-        }
+          });
+        },
       )
       .catch((error) => {
         res.status(500).json({
           message: 'Terjadi kesalahan di sisi server!',
           moreInfo: error,
-        })
-      })
+        });
+      });
   } catch (err) {
     res.status(400).send({
-      message: err.message || 'An error occurred'
-    })
+      message: err.message || 'An error occurred',
+    });
   }
-})
+});
 
-app.listen(8080, () => {
-  console.log('Listening on :8080')
-})
+app.listen(8080);

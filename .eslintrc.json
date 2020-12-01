@@ -1,10 +1,9 @@
 {
     "env": {
-        "node": true,
+        "browser": true,
         "es2021": true
     },
     "extends": [
-        "prettier",
         "airbnb-base"
     ],
     "parser": "@typescript-eslint/parser",
@@ -13,8 +12,9 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint",
-        "prettier"
+        "@typescript-eslint"
     ],
-    "rules": {}
+    "rules": {
+        "linebreak-style": "off"
+    }
 }

@@ -17,7 +17,7 @@ app.use(cors())
 dotenv.config()
 
 /*
- * EmailSendedResponse adalah struktur response balikan dari Gmail API 
+ * EmailSendedResponse adalah struktur response data balikan dari Gmail API 
  * ketika email konfirmasi berhasil dikirim
  */
 interface EmailSendedResponse {
@@ -36,7 +36,10 @@ interface EmailSendedResponse {
 
 /*
  * RegConfirmBody adalah struktur request body yang akan dikirim oleh frontend
- * ketika user melakukan pendaftaran dan perlu melakukan konfirmasi email 
+ * ke backend ketika user melakukan pendaftaran (untuk mengirim email konfirmasi)
+ *
+ * Struktur RegConfirmBody disini HARUS MIRIP dengan
+ * struktur RegConfirmBody yang ada di projek frontend
  */
 interface RegConfirmBody {
   destEmail: string
@@ -45,12 +48,13 @@ interface RegConfirmBody {
 
 /*
  * Gmailer Middleware
- * Berisi kode untuk melakukan pengiriman email konfirmasi pendaftaran
- * dengan menggunakan Gmail API.
+ * Berisikan kode untuk melakukan pengiriman email konfirmasi pendaftaran kepada
+ * member baru melalui Gmail API.
  * 
  * Adapun akun gmail yang digunakan untuk mengirim email adalah akun gmail yang 
- * anda telah anda konfigurasi API nya, silahkan lihat tata cara buat dapetin 
- * akses ke APInya dengan membaca file CATATAN_GMAIL_MAILER.md di root folder
+ * anda telah anda set konfigurasi API nya.
+ * Silahkan lihat tata cara buat dapetin akses ke APInya dengan 
+ * membaca file CATATAN_GMAIL_MAILER.md di root folder. Jangan lupa set .env nya
  */
 app.use(async (req, res) => {
   try {

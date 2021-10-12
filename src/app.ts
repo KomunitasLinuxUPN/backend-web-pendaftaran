@@ -114,7 +114,7 @@ app.use(async (req, res) => {
           moreInfo: error,
         });
       });
-  } catch (err) {
+  } catch (err: any) {
     res.status(400).send({
       message: err.message || 'An error occurred',
     });

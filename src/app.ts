@@ -20,19 +20,19 @@ dotenv.config();
  * EmailSendedResponse adalah struktur response data balikan dari Gmail API
  * ketika email konfirmasi berhasil dikirim
  */
-interface EmailSendedResponse {
-  accepted: string[]
-  rejected: string[]
-  envelopeTime: number
-  messageTime: number
-  messageSize: number
-  response: string
+type EmailSendedResponse = {
+  accepted: string[];
+  rejected: string[];
+  envelopeTime: number;
+  messageTime: number;
+  messageSize: number;
+  response: string;
   envelope: {
-    from: string
-    to: string[]
-  }
-  messageId: string
-}
+    from: string;
+    to: string[];
+  };
+  messageId: string;
+};
 
 /*
  * RegConfirmBody adalah struktur request body yang akan dikirim oleh frontend
@@ -41,10 +41,10 @@ interface EmailSendedResponse {
  * Struktur RegConfirmBody disini HARUS MIRIP dengan
  * struktur RegConfirmBody yang ada di projek frontend
  */
-interface RegConfirmBody {
-  destEmail: string
-  confirmationURL: string
-}
+type RegConfirmBody = {
+  destEmail: string;
+  confirmationURL: string;
+};
 
 /*
  * Gmailer Middleware
@@ -58,7 +58,7 @@ interface RegConfirmBody {
  */
 app.use(async (req, res) => {
   try {
-    const { destEmail, confirmationURL } = (req.body as RegConfirmBody);
+    const { destEmail, confirmationURL } = req.body as RegConfirmBody;
 
     const emailTemplate = await ejs.renderFile(
       Path.join(__dirname, '/templates/confirmation.ejs'),
@@ -114,7 +114,7 @@ app.use(async (req, res) => {
           moreInfo: error,
         });
       });
-  } catch (err) {
+  } catch (err: any) {
     res.status(400).send({
       message: err.message || 'An error occurred',
     });
